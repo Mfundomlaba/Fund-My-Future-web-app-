@@ -1,9 +1,9 @@
 $env:MAIL_PROVIDER="brevo"
-$env:MAIL_DEFAULT_SENDER="bhengus023@gmail.com"
-$env:BREVO_API_KEY="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"
+$env:MAIL_DEFAULT_SENDER="email@gmail.com"
+$env:BREVO_API_KEY=""
 $env:BREVO_SENDER_NAME="Fund My Future"
 
 setx MAIL_PROVIDER "brevo"
-setx MAIL_DEFAULT_SENDER "bhengus023@gmail.com"
-setx BREVO_API_KEY "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"
+setx MAIL_DEFAULT_SENDER "email@gmail.com"
+setx BREVO_API_KEY ""
 setx BREVO_SENDER_NAME "Fund My Future"
