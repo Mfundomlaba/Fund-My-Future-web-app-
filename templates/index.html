@@ -4,9 +4,10 @@
 
 {% block content %}
 <div class="hero">
-    <h1>Fund My Future</h1>
-    <p>Track scholarships, manage applications, and support students from one clean platform.</p>
-
+    <div class="hero-tag">🎓 South African Students</div>
+          <h1>Your <em>Financial Future</em>,<br>Tracked in One Place</h1>
+           <p>Apply for scholarships and bursaries, upload documents, and track every application—all from one secure portal.</p>
+    
     {% if not session.get("user_type") %}
         <a href="/register" class="btn">Student Registration</a>
         <a href="/login" class="btn" style="margin-left:10px;">Login</a>
