@@ -1,6 +1,7 @@
 from flask import Flask
 from config import Config
 from database.db_setup import db
+import os
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -20,8 +21,8 @@ from models.application_model import Application
 from models.uploaded_documents_model import UploadedDocument
 from models.application_review_model import ApplicationReview
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
+with app.app_context():
+    db.create_all()
 
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
