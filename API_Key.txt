@@ -1,9 +1,0 @@
-$env:MAIL_PROVIDER="brevo"
-$env:MAIL_DEFAULT_SENDER="email@gmail.com"
-$env:BREVO_API_KEY=""
-$env:BREVO_SENDER_NAME="Fund My Future"
-
-setx MAIL_PROVIDER "brevo"
-setx MAIL_DEFAULT_SENDER "email@gmail.com"
-setx BREVO_API_KEY ""
-setx BREVO_SENDER_NAME "Fund My Future"

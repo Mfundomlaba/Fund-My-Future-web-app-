@@ -6,3 +6,5 @@ __pycache__/
 .env
 instance/
 uploads/
+API_Key.txt
+.env
