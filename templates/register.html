@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Register | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Student Registration</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label>Student Number</label>
+        <input type="text" name="student_number" id="student_number" required>
+
+        <label>First Name</label>
+        <input type="text" name="first_name" required>
+
+        <label>Last Name</label>
+        <input type="text" name="last_name" required>
+
+        <label>Phone Number</label>
+        <input type="text" name="phone_number" required>
+
+        <label>Institution</label>
+        <select name="institution" id="institution" required>
+            <option value="">-- Select Institution --</option>
+            {% for name in institutions.keys() %}
+                <option value="{{ name }}">{{ name }}</option>
+            {% endfor %}
+            <option value="Other">Other</option>
+        </select>
+
+        <p class="field-note">
+            Your email will be generated automatically using your student number for listed institutions.
+        </p>
+
+        <div id="manual-email-group" style="display: none;">
+            <label>Email (Only if "Other" selected)</label>
+            <input type="email" name="manual_email" id="manual_email" placeholder="Enter your email if not listed">
+        </div>
+
+        <div id="generated-email-group" style="display: none;">
+            <label>Generated Student Email</label>
+            <input type="text" id="generated_email" readonly placeholder="Will appear after selecting institution">
+        </div>
+
+        <label>Current Debt</label>
+        <input type="number" name="current_debt" step="0.01" min="0" value="0">
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <label>Profile Picture</label>
+        <input type="file" name="profile_picture">
+
+        <button type="submit" class="btn">Register</button>
+    </form>
+</div>
+
+<script>
+const institutionDomains = {
+    "Durban University of Technology": "dut4life.ac.za",
+    "University of KwaZulu-Natal": "stu.ukzn.ac.za",
+    "University of Cape Town": "myuct.ac.za",
+    "University of the Witwatersrand": "students.wits.ac.za",
+    "University of Pretoria": "tuks.ac.za",
+    "University of Johannesburg": "uj.ac.za",
+    "Stellenbosch University": "sun.ac.za",
+    "Nelson Mandela University": "mandela.ac.za",
+    "Cape Peninsula University of Technology": "mycput.ac.za",
+    "Tshwane University of Technology": "tut4life.ac.za"
+};
+
+const studentNumberInput = document.getElementById("student_number");
+const institutionSelect = document.getElementById("institution");
+const generatedEmailInput = document.getElementById("generated_email");
+const manualEmailInput = document.getElementById("manual_email");
+const manualEmailGroup = document.getElementById("manual-email-group");
+const generatedEmailGroup = document.getElementById("generated-email-group");
+
+function updateEmailFields() {
+    const studentNumber = studentNumberInput.value.trim();
+    const institution = institutionSelect.value;
+
+    if (!institution) {
+        generatedEmailGroup.style.display = "none";
+        manualEmailGroup.style.display = "none";
+        generatedEmailInput.value = "";
+        manualEmailInput.required = false;
+        return;
+    }
+
+    if (institution === "Other") {
+        generatedEmailGroup.style.display = "none";
+        manualEmailGroup.style.display = "block";
+        generatedEmailInput.value = "";
+        manualEmailInput.required = true;
+        return;
+    }
+
+    manualEmailGroup.style.display = "none";
+    manualEmailInput.required = false;
+    manualEmailInput.value = "";
+    generatedEmailGroup.style.display = "block";
+
+    const domain = institutionDomains[institution];
+
+    if (studentNumber && domain) {
+        generatedEmailInput.value = (studentNumber + "@" + domain).toLowerCase();
+    } else {
+        generatedEmailInput.value = "";
+    }
+}
+
+studentNumberInput.addEventListener("input", updateEmailFields);
+institutionSelect.addEventListener("change", updateEmailFields);
+</script>
+{% endblock %}

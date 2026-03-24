@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Apply | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Apply for {{ scholarship.title }}</h1>
+
+    <p><strong>Provider:</strong> {{ scholarship.provider }}</p>
+    <p><strong>Deadline:</strong> {{ scholarship.deadline }}</p>
+    <p><strong>Description:</strong> {{ scholarship.description }}</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% if profile_documents %}
+            <h2 class="section-title">Required Profile Documents</h2>
+
+            {% for item in profile_documents %}
+                <div class="card" style="margin-bottom: 15px;">
+                    <h3>{{ item.document.document_name }}</h3>
+
+                    {% if item.is_uploaded %}
+                        <p class="success-text">Already uploaded in your profile.</p>
+
+                        {% if item.document.document_name == "ID Document" %}
+                            <p>
+                                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ student.id_document_path) }}" target="_blank">
+                                    View ID Document
+                                </a>
+                            </p>
+                        {% elif item.document.document_name == "Academic Record" %}
+                            <p>
+                                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ student.academic_record_path) }}" target="_blank">
+                                    View Academic Record
+                                </a>
+                            </p>
+                        {% endif %}
+                    {% else %}
+                        <p class="error-text">Missing from your profile.</p>
+                        <p>
+                            <a href="{{ url_for('student_profile') }}" class="btn">Go to Profile to Upload</a>
+                        </p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if application_documents %}
+            <h2 class="section-title">Additional Required Documents</h2>
+
+            {% for document in application_documents %}
+                <label>{{ document.document_name }}</label>
+                <input type="file" name="document_{{ document.id }}" required>
+            {% endfor %}
+        {% endif %}
+
+        {% if not profile_documents and not application_documents %}
+            <p>No required documents specified for this scholarship.</p>
+        {% endif %}
+
+        <button type="submit" class="btn">Submit Application</button>
+    </form>
+</div>
+{% endblock %}

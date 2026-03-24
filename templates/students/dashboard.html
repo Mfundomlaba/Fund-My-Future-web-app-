@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | Fund My Future{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 20px;">Welcome {{ student.first_name }} {{ student.last_name }}</h1>
+
+{% if student.profile_picture %}
+    <img src="{{ url_for('static', filename='uploads/profile_pictures/' + student.profile_picture) }}" width="120" style="border-radius: 50%; margin-bottom: 20px;">
+{% endif %}
+
+<div class="card-grid">
+    <div class="card">
+        <h3>Update Profile</h3>
+        <p>View and manage your student details.</p>
+        <a href="/student/profile">Open</a>
+    </div>
+
+    <div class="card">
+        <h3>Available Scholarships</h3>
+        <p>Browse all active scholarship opportunities.</p>
+        <a href="/student/scholarships">View</a>
+    </div>
+
+    <div class="card">
+        <h3>My Applications</h3>
+        <p>Track scholarships you have already applied for.</p>
+        <a href="/student/applications">View</a>
+    </div>
+</div>
+{% endblock %}

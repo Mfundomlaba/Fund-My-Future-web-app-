@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Fund My Future</h1>
+    <p>Track scholarships, manage applications, and support students from one clean platform.</p>
+
+    {% if not session.get("user_type") %}
+        <a href="/register" class="btn">Student Registration</a>
+        <a href="/login" class="btn" style="margin-left:10px;">Login</a>
+    {% endif %}
+</div>
+
+<div class="card-grid">
+    <div class="card">
+        <h3>Students</h3>
+        <p>Register, browse scholarships, apply, and track submissions.</p>
+        <a href="/register">Get Started</a>
+    </div>
+
+    <div class="card">
+        <h3>Staff</h3>
+        <p>Create scholarships, define required documents, and review applications.</p>
+        <a href="/login">Access Portal</a>
+    </div>
+
+    <div class="card">
+        <h3>Application Tracking</h3>
+        <p>Keep records of submitted applications and manage scholarship workflows.</p>
+        <a href="/login">View More</a>
+    </div>
+</div>
+{% endblock %}

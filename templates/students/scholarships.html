@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Scholarships | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Available Scholarships</h1>
+
+    {% if scholarships %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Provider</th>
+                    <th>Amount</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scholarship in scholarships %}
+                <tr>
+                    <td>{{ scholarship.title }}</td>
+                    <td>{{ scholarship.provider }}</td>
+                    <td>{{ scholarship.amount }}</td>
+                    <td>{{ scholarship.deadline }}</td>
+                    <td><span class="badge badge-open">{{ scholarship.status }}</span></td>
+                    <td><a href="/student/apply/{{ scholarship.id }}">Apply</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No scholarships available right now.</p>
+    {% endif %}
+</div>
+{% endblock %}

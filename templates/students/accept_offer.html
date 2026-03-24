@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Accept Offer | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Accept Scholarship Offer</h1>
+
+    <p><strong>Scholarship:</strong> {{ application.scholarship.title }}</p>
+    <p><strong>Provider:</strong> {{ application.scholarship.provider }}</p>
+
+    <h2 class="section-title">Offer Terms</h2>
+    <div class="contract-box">
+        <pre>{{ contract_text }}</pre>
+    </div>
+
+    <form method="POST" action="{{ url_for('accept_offer', application_id=application.id) }}" id="acceptOfferForm">
+        <label>Type Your Full Name</label>
+        <input type="text" name="accepted_by_name" required>
+
+        <label>Signature</label>
+        <canvas id="signature-pad" class="signature-canvas"></canvas>
+
+        <div style="margin-bottom: 15px;">
+            <button type="button" class="btn" id="clear-signature">Clear Signature</button>
+        </div>
+
+        <input type="hidden" name="signature_data" id="signature_data">
+
+        <label class="checkbox-label">
+            <input type="checkbox" name="acceptance_confirmed" value="yes" required>
+            I confirm that I have read and accepted the scholarship terms and conditions.
+        </label>
+
+        <button type="submit" class="btn">Submit Acceptance</button>
+    </form>
+</div>
+
+<script>
+    const canvas = document.getElementById("signature-pad");
+    const ctx = canvas.getContext("2d");
+    const clearButton = document.getElementById("clear-signature");
+    const form = document.getElementById("acceptOfferForm");
+    const signatureInput = document.getElementById("signature_data");
+
+    let drawing = false;
+    let hasSignature = false;
+
+    function setupCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#111827";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function getPosition(event) {
+        const rect = canvas.getBoundingClientRect();
+
+        if (event.touches && event.touches.length > 0) {
+            return {
+                x: event.touches[0].clientX - rect.left,
+                y: event.touches[0].clientY - rect.top
+            };
+        }
+
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+        };
+    }
+
+    function startDrawing(event) {
+        drawing = true;
+        const pos = getPosition(event);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        event.preventDefault();
+    }
+
+    function draw(event) {
+        if (!drawing) return;
+
+        const pos = getPosition(event);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        hasSignature = true;
+        event.preventDefault();
+    }
+
+    function stopDrawing(event) {
+        drawing = false;
+        if (event) {
+            event.preventDefault();
+        }
+    }
+
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseleave", stopDrawing);
+
+    canvas.addEventListener("touchstart", startDrawing, { passive: false });
+    canvas.addEventListener("touchmove", draw, { passive: false });
+    canvas.addEventListener("touchend", stopDrawing, { passive: false });
+
+    clearButton.addEventListener("click", function () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        hasSignature = false;
+        signatureInput.value = "";
+    });
+
+    form.addEventListener("submit", function (event) {
+        if (!hasSignature) {
+            event.preventDefault();
+            alert("Please draw your signature before submitting.");
+            return;
+        }
+
+        signatureInput.value = canvas.toDataURL("image/png");
+    });
+
+    window.addEventListener("load", setupCanvas);
+    window.addEventListener("resize", setupCanvas);
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Required Documents | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="form-card" style="margin-bottom: 25px;">
+    <h1>Manage Required Documents</h1>
+
+    <p><strong>Scholarship:</strong> {{ scholarship.title }}</p>
+
+    <form method="POST">
+        <label>Document Name</label>
+        <input type="text" name="document_name" required>
+
+        <button type="submit" class="btn">Add Document</button>
+    </form>
+</div>
+
+<div class="table-card">
+    <h2>Current Required Documents</h2>
+
+    {% if documents %}
+        <ul style="margin-top: 15px; padding-left: 20px;">
+            {% for document in documents %}
+                <li style="margin-bottom: 10px;">{{ document.document_name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No required documents added yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

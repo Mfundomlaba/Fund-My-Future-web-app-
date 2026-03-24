@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>My Applications</h1>
+
+    {% if applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Scholarship</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Track</th>
+                    <th>Offer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td>{{ application.scholarship.title }}</td>
+                    <td>
+                        <span class="badge badge-{{ application.status|replace('_', '-') }}">
+                            {{ application.status.replace("_", " ").title() }}
+                        </span>
+                    </td>
+                    <td>{{ application.submitted_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>
+                        <a href="{{ url_for('track_application', application_id=application.id) }}">
+                            Track Application
+                        </a>
+                    </td>
+                    <td>
+                        {% if application.status == "approved" %}
+                            <a href="{{ url_for('accept_offer', application_id=application.id) }}" class="btn">
+                                Accept Offer
+                            </a>
+                        {% elif application.status == "accepted" %}
+                            Accepted
+                        {% else %}
+                            --
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not applied for any scholarships yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Student Profile</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label>Student Number</label>
+        <input type="text" value="{{ student.student_number }}" readonly>
+
+        <label>Institution</label>
+        <input type="text" value="{{ student.institution }}" readonly>
+
+        <label>Email</label>
+        <input type="text" value="{{ student.email }}" readonly>
+
+        <label>First Name</label>
+        <input type="text" name="first_name" value="{{ student.first_name }}" required>
+
+        <label>Last Name</label>
+        <input type="text" name="last_name" value="{{ student.last_name }}" required>
+
+        <label>Phone Number</label>
+        <input type="text" name="phone_number" value="{{ student.phone_number }}" required>
+
+                <label>Current Debt</label>
+
+        {% if has_accepted_scholarship %}
+            <input
+                type="number"
+                step="0.01"
+                min="0"
+                value="{{ student.current_debt or 0 }}"
+                disabled
+            >
+            <p class="field-note">
+                Your debt can no longer be edited because you have already accepted a scholarship award.
+            </p>
+        {% else %}
+            <input
+                type="number"
+                name="current_debt"
+                step="0.01"
+                min="0"
+                value="{{ student.current_debt or 0 }}"
+            >
+        {% endif %}
+
+        <label>Profile Picture</label>
+<input type="file" name="profile_picture">
+
+{% if student.profile_picture %}
+    <p>
+        Current file:
+        <a href="{{ url_for('static', filename='uploads/profile_pictures/' ~ student.profile_picture) }}" target="_blank">
+            View Profile Picture
+        </a>
+    </p>
+{% else %}
+    <p>No profile picture uploaded yet.</p>
+{% endif %}
+
+        <label>ID Document</label>
+        <input type="file" name="id_document">
+        {% if student.id_document_path %}
+            <p>
+                Current file:
+                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ student.id_document_path) }}" target="_blank">
+                    View ID Document
+                </a>
+            </p>
+        {% else %}
+            <p>No ID document uploaded yet.</p>
+        {% endif %}
+
+        <label>Academic Record</label>
+        <input type="file" name="academic_record">
+        {% if student.academic_record_path %}
+            <p>
+                Current file:
+                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ student.academic_record_path) }}" target="_blank">
+                    View Academic Record
+                </a>
+            </p>
+        {% else %}
+            <p>No academic record uploaded yet.</p>
+        {% endif %}
+
+        <button type="submit" class="btn">Update Profile</button>
+    </form>
+</div>
+{% endblock %}

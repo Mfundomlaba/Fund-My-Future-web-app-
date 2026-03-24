@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Track Application | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Track Application</h1>
+
+    <p><strong>Scholarship:</strong> {{ application.scholarship.title }}</p>
+    <p><strong>Provider:</strong> {{ application.scholarship.provider }}</p>
+    <p>
+        <strong>Current Status:</strong>
+        <span class="badge badge-{{ application.status|replace('_', '-') }}">
+            {{ application.status.replace("_", " ").title() }}
+        </span>
+    </p>
+    <p><strong>Submitted:</strong> {{ application.submitted_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p><strong>Last Updated:</strong> {{ application.last_updated.strftime("%Y-%m-%d %H:%M") }}</p>
+
+    <h2 class="section-title">Application Progress</h2>
+
+    {% set status_order = ["submitted", "under_review", "shortlisted", "approved", "accepted"] %}
+    {% set current_index = status_order.index(application.status) if application.status in status_order else -1 %}
+
+    <div class="progress-stepper">
+        {% for status in status_order %}
+            {% set step_index = loop.index0 %}
+            {% set is_done = current_index > step_index %}
+            {% set is_current = current_index == step_index %}
+            {% set is_pending = current_index < step_index %}
+
+            <div class="progress-step">
+                <div class="progress-circle
+                    {% if is_done %}done{% elif is_current %}current{% else %}pending{% endif %}">
+                    {% if is_done %}
+                        ✓
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </div>
+                <div class="progress-label
+                    {% if is_done %}done{% elif is_current %}current{% else %}pending{% endif %}">
+                    {{ status.replace("_", " ").title() }}
+                </div>
+            </div>
+
+            {% if not loop.last %}
+                <div class="progress-line {% if current_index > step_index %}done{% else %}pending{% endif %}"></div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if application.status == "rejected" %}
+        <div class="status-message-box rejected-box">
+            <strong>Application Result:</strong>
+            Your application was not successful.
+        </div>
+    {% elif application.status == "needs_revision" %}
+        <div class="status-message-box revision-box">
+            <strong>Action Required:</strong>
+            Your application needs revision. Please review the latest comments in your timeline.
+        </div>
+    {% endif %}
+
+    {% if application.status == "approved" %}
+        <p style="margin: 20px 0;">
+            <a href="{{ url_for('accept_offer', application_id=application.id) }}" class="btn">
+                Accept Scholarship Offer
+            </a>
+        </p>
+    {% endif %}
+
+    {% if application.status == "accepted" %}
+        <h2 class="section-title">Acceptance Details</h2>
+        <p><strong>Accepted By:</strong> {{ application.accepted_by_name }}</p>
+        <p><strong>Accepted At:</strong> {{ application.accepted_at.strftime("%Y-%m-%d %H:%M") if application.accepted_at else "N/A" }}</p>
+
+        {% if application.debt_before_award is not none %}
+            <h2 class="section-title">Debt Adjustment Summary</h2>
+            <p><strong>Debt Before Award:</strong> R{{ "%.2f"|format(application.debt_before_award) }}</p>
+            <p><strong>Award Amount Applied:</strong> R{{ "%.2f"|format(application.award_amount_applied or 0) }}</p>
+            <p><strong>Debt After Award:</strong> R{{ "%.2f"|format(application.debt_after_award or 0) }}</p>
+        {% endif %}
+
+        {% if application.signature_file_path %}
+            <p>
+                <strong>Signature:</strong><br>
+                <img
+                    src="{{ url_for('static', filename='uploads/signatures/' ~ application.signature_file_path) }}"
+                    alt="Student Signature"
+                    class="signature-preview"
+                >
+            </p>
+        {% endif %}
+
+        <p style="margin: 20px 0;">
+            <a href="{{ url_for('download_student_contract', application_id=application.id) }}" class="btn">
+                Download Signed Contract
+            </a>
+        </p>
+    {% endif %}
+
+    <h2 class="section-title">Application Timeline</h2>
+
+    {% if review_history %}
+        <div class="timeline-list">
+            {% for review in review_history %}
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3>{{ review.status.replace("_", " ").title() }}</h3>
+                        <p><strong>Date:</strong> {{ review.reviewed_at.strftime("%Y-%m-%d %H:%M") }}</p>
+                        <p><strong>Comment:</strong> {{ review.comment if review.comment else "No additional comment provided." }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="timeline-list">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h3>Submitted</h3>
+                    <p>Your application has been submitted and is waiting for staff review.</p>
+                    <p><strong>Date:</strong> {{ application.submitted_at.strftime("%Y-%m-%d %H:%M") }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

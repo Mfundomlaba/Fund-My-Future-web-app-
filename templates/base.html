@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fund My Future{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="logo">Fund<span>MyFuture</span></div>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+
+            {% if session.get("user_type") == "student" %}
+                <a href="/student/dashboard">Dashboard</a>
+                <a href="/student/applications">Applications</a>
+                <a href="/student/profile">Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+
+            {% elif session.get("user_type") == "staff" %}
+                <a href="/staff/dashboard">Dashboard</a>
+                <a href="/staff/applications">Review Applications</a>
+                <a href="/staff/create-scholarship">Create Scholarship</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+
+            {% else %}
+                <a href="/login">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="page-container">
+        
+        {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 FundMyFuture. Empowering students through financial clarity.</p>
+    </footer>
+
+</body>
+</html>

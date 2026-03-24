@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Staff Dashboard</h1>
+    <p style="margin-bottom: 25px;">Manage scholarships, required documents, and student applications.</p>
+
+    <div class="dashboard-grid">
+        <a href="{{ url_for('create_scholarship') }}" class="dashboard-tile">
+            <h3>Create Scholarship</h3>
+            <p>Add a new bursary or scholarship opportunity.</p>
+        </a>
+
+        <a href="{{ url_for('manage_scholarships') }}" class="dashboard-tile">
+            <h3>Manage Scholarships</h3>
+            <p>View, edit, and manage all bursaries and scholarships.</p>
+        </a>
+
+        <a href="{{ url_for('staff_applications') }}" class="dashboard-tile">
+            <h3>Review Applications</h3>
+            <p>Browse scholarships and review applications by scholarship.</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

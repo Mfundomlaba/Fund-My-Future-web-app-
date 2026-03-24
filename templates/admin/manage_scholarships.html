@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Scholarships | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Manage Scholarships</h1>
+
+    {% if scholarship_stats %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Provider</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Applications</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in scholarship_stats %}
+                <tr>
+                    <td>{{ item.scholarship.title }}</td>
+                    <td>{{ item.scholarship.provider }}</td>
+                    <td>{{ item.scholarship.deadline }}</td>
+                    <td>
+                        <span class="badge badge-{{ item.scholarship.status }}">
+                            {{ item.scholarship.status.title() }}
+                        </span>
+                    </td>
+                    <td>{{ item.total_applications }}</td>
+                    <td>
+                        <div class="action-stack">
+                            <a href="{{ url_for('edit_scholarship', scholarship_id=item.scholarship.id) }}" class="btn btn-small">
+                                Edit
+                            </a>
+                            <a href="{{ url_for('add_required_documents', scholarship_id=item.scholarship.id) }}" class="btn btn-small">
+                                Manage Documents
+                            </a>
+                            <form method="POST" action="{{ url_for('delete_scholarship', scholarship_id=item.scholarship.id) }}" onsubmit="return confirm('Delete this scholarship?');">
+                                <button type="submit" class="btn btn-small btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No scholarships created yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

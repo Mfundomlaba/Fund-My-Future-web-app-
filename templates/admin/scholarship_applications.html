@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Scholarship Applications | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Applications for {{ scholarship.title }}</h1>
+    <p><strong>Provider:</strong> {{ scholarship.provider }}</p>
+
+    {% if applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td>{{ application.student_number }}</td>
+                    <td>
+                        <span class="badge badge-{{ application.status|replace('_', '-') }}">
+                            {{ application.status.replace("_", " ").title() }}
+                        </span>
+                    </td>
+                    <td>{{ application.submitted_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>
+                        <a href="{{ url_for('view_application', application_id=application.id) }}">
+                            View Application
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No applications have been submitted for this scholarship yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

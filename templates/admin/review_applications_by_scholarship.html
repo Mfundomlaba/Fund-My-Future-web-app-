@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Review Applications | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Review Applications by Scholarship</h1>
+
+    {% if scholarship_application_summary %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Scholarship</th>
+                    <th>Provider</th>
+                    <th>Total Applications</th>
+                    <th>Approved</th>
+                    <th>Accepted</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in scholarship_application_summary %}
+                <tr>
+                    <td>{{ item.scholarship.title }}</td>
+                    <td>{{ item.scholarship.provider }}</td>
+                    <td>{{ item.total_applications }}</td>
+                    <td>{{ item.approved_count }}</td>
+                    <td>{{ item.accepted_count }}</td>
+                    <td>
+                        <a href="{{ url_for('scholarship_applications', scholarship_id=item.scholarship.id) }}" class="btn btn-small">
+                            View Applications
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No scholarships found yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

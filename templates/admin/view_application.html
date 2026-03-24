@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Application Details{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Application Details</h1>
+
+    <p><strong>Student:</strong> {{ application.student_number }}</p>
+    <p><strong>Scholarship:</strong> {{ application.scholarship.title }}</p>
+    <p>
+        <strong>Current Status:</strong>
+        <span class="badge badge-{{ application.status|replace('_', '-') }}">
+            {{ application.status.replace("_", " ").title() }}
+        </span>
+    </p>
+    <p><strong>Submitted:</strong> {{ application.submitted_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    <p><strong>Last Updated:</strong> {{ application.last_updated.strftime("%Y-%m-%d %H:%M") }}</p>
+
+    {% if application.status == "accepted" %}
+        <p style="margin: 20px 0;">
+            <a href="{{ url_for('download_staff_contract', application_id=application.id) }}" class="btn">
+                Download Signed Contract
+            </a>
+        </p>
+    {% endif %}
+
+    <h2 class="section-title">Update Application Status</h2>
+
+    <form method="POST">
+        <label>Status</label>
+        <select name="status" required>
+            {% for status in valid_statuses %}
+                <option value="{{ status }}" {% if application.status == status %}selected{% endif %}>
+                    {{ status.replace("_", " ").title() }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Comment</label>
+        <textarea name="comment" placeholder="Add an optional review comment"></textarea>
+
+        <button type="submit" class="btn">Update Status</button>
+    </form>
+
+    <h2 class="section-title">Student Profile Documents</h2>
+
+    <ul style="margin-left: 20px;">
+        <li style="margin-bottom: 10px;">
+            <strong>ID Document:</strong>
+            {% if profile_documents.id_document %}
+                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ profile_documents.id_document) }}" target="_blank">
+                    View ID Document
+                </a>
+            {% else %}
+                Not uploaded
+            {% endif %}
+        </li>
+
+        <li style="margin-bottom: 10px;">
+            <strong>Academic Record:</strong>
+            {% if profile_documents.academic_record %}
+                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ profile_documents.academic_record) }}" target="_blank">
+                    View Academic Record
+                </a>
+            {% else %}
+                Not uploaded
+            {% endif %}
+        </li>
+    </ul>
+
+    <h2 class="section-title">Application Uploaded Documents</h2>
+
+    {% if documents %}
+        <ul style="margin-left: 20px;">
+            {% for doc in documents %}
+                <li style="margin-bottom: 10px;">
+                    <a href="{{ url_for('static', filename='uploads/application_documents/' ~ doc.file_path) }}" target="_blank">
+                        View Uploaded Document
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No application-uploaded documents found.</p>
+    {% endif %}
+
+    <h2 class="section-title">Application Timeline</h2>
+
+    {% if review_history %}
+        <div class="dashboard-grid">
+            {% for review in review_history %}
+                <div class="dashboard-tile dashboard-info-tile">
+                    <h3>{{ review.status.replace("_", " ").title() }}</h3>
+                    <p><strong>Date:</strong> {{ review.reviewed_at.strftime("%Y-%m-%d %H:%M") }}</p>
+                    <p><strong>Staff ID:</strong> {{ review.staff_id }}</p>
+                    <p><strong>Comment:</strong> {{ review.comment if review.comment else "No comment provided." }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No review history yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

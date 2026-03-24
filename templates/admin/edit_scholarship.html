@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Scholarship | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Edit Scholarship</h1>
+
+    <form method="POST">
+        <label>Title</label>
+        <input type="text" name="title" value="{{ scholarship.title }}" required>
+
+        <label>Provider</label>
+        <input type="text" name="provider" value="{{ scholarship.provider }}" required>
+
+        <label>Amount</label>
+        <input type="text" name="amount" value="{{ scholarship.amount or '' }}">
+
+        <label>Maximum Number of Applicants</label>
+        <input type="number" name="max_applicants" min="1" value="{{ scholarship.max_applicants or '' }}">
+
+        <label>Deadline</label>
+        <input type="date" name="deadline" value="{{ scholarship.deadline }}" required>
+
+        <label>Description</label>
+        <textarea name="description">{{ scholarship.description or '' }}</textarea>
+
+        <label>Status</label>
+        <select name="status" required>
+            {% for status in valid_statuses %}
+                <option value="{{ status }}" {% if scholarship.status == status %}selected{% endif %}>
+                    {{ status.title() }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn">Update Scholarship</button>
+    </form>
+</div>
+{% endblock %}
