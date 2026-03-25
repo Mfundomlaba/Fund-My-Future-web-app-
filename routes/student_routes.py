@@ -1,4 +1,4 @@
-from flask import render_template, session, redirect, url_for, flash, request
+from flask import render_template, session, redirect, url_for, flash, request, send_file
 from app import app
 from database.db_setup import db
 from models.student_model import Student
@@ -10,13 +10,10 @@ from models.application_review_model import ApplicationReview
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from services.email_service import send_offer_acceptance_email
-from flask import send_file
 from services.contract_pdf_service import build_contract_pdf
-from io import BytesIO
 import os
 import base64
 import uuid
-
 
 
 ALLOWED_PROFILE_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
@@ -65,6 +62,7 @@ def save_signature_image(signature_data, student_number, application_id):
     except Exception:
         return None
 
+
 def parse_currency_to_float(amount_value):
     if amount_value is None:
         return 0.0
@@ -83,6 +81,7 @@ def parse_currency_to_float(amount_value):
         return float(cleaned)
     except ValueError:
         return 0.0
+
 
 @app.route("/student/dashboard")
 def student_dashboard():
@@ -134,14 +133,17 @@ def student_profile():
             flash("First name, last name, and phone number are required.")
             return redirect(url_for("student_profile"))
 
-        try:
-            debt_value = float(current_debt) if current_debt else 0.0
-            if debt_value < 0:
-                flash("Current debt cannot be negative.")
+        debt_value = student.current_debt or 0.0
+
+        if not has_accepted_scholarship:
+            try:
+                debt_value = float(current_debt) if current_debt else 0.0
+                if debt_value < 0:
+                    flash("Current debt cannot be negative.")
+                    return redirect(url_for("student_profile"))
+            except ValueError:
+                flash("Current debt must be a valid number.")
                 return redirect(url_for("student_profile"))
-        except ValueError:
-            flash("Current debt must be a valid number.")
-            return redirect(url_for("student_profile"))
 
         student.first_name = first_name
         student.last_name = last_name
@@ -356,6 +358,27 @@ def student_applications():
     )
 
 
+@app.route("/student/awards")
+def student_awards():
+    if session.get("user_type") != "student":
+        return redirect(url_for("login"))
+
+    student_number = session.get("student_number")
+
+    if not student_number:
+        return redirect(url_for("login"))
+
+    awards = Application.query.filter_by(
+        student_number=student_number,
+        status="accepted"
+    ).order_by(Application.accepted_at.desc()).all()
+
+    return render_template(
+        "students/awards.html",
+        awards=awards
+    )
+
+
 @app.route("/student/application/<int:application_id>/track")
 def track_application(application_id):
     if session.get("user_type") != "student":
@@ -500,6 +523,7 @@ def accept_offer(application_id):
         application=application,
         contract_text=OFFER_CONTRACT_TEXT
     )
+
 
 @app.route("/student/application/<int:application_id>/download-contract")
 def download_student_contract(application_id):

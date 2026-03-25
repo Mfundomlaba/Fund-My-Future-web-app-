@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Award History | Fund My Future{% endblock %}
+
+{% block content %}
+<div class="table-card">
+    <h1>Award History</h1>
+
+    {% if awards %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Scholarship</th>
+                    <th>Provider</th>
+                    <th>Accepted Date</th>
+                    <th>Amount Awarded</th>
+                    <th>Debt Before</th>
+                    <th>Amount Deducted</th>
+                    <th>Debt After</th>
+                    <th>Contract</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in awards %}
+                <tr>
+                    <td>{{ app.scholarship.title }}</td>
+                    <td>{{ app.scholarship.provider }}</td>
+                    <td>
+                        {{ app.accepted_at.strftime("%Y-%m-%d") if app.accepted_at else "N/A" }}
+                    </td>
+                    <td>R{{ "%.2f"|format(app.award_amount_applied or 0) }}</td>
+                    <td>R{{ "%.2f"|format(app.debt_before_award or 0) }}</td>
+                    <td>R{{ "%.2f"|format(app.award_amount_applied or 0) }}</td>
+                    <td>R{{ "%.2f"|format(app.debt_after_award or 0) }}</td>
+                    <td>
+                        <a href="{{ url_for('download_student_contract', application_id=app.id) }}">
+                            Download
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No scholarships awarded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
