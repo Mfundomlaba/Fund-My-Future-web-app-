@@ -24,10 +24,6 @@ from werkzeug.security import generate_password_hash
 from models.staff_model import StaffAdmin
 from database.db_setup import db
 
-with app.app_context():
-    db.create_all()
-    create_default_admin()
-
 def create_default_admin():
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@fundmyfuture.com")
     admin_password = os.environ.get("ADMIN_PASSWORD", "Admin123!")
@@ -48,6 +44,11 @@ def create_default_admin():
         print("Default admin created successfully.")
     else:
         print("Default admin already exists.")
+
+with app.app_context():
+    db.create_all()
+    create_default_admin()
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
