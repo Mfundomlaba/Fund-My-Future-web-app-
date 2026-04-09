@@ -56,6 +56,10 @@ def create_scholarship():
 
         deadline = datetime.strptime(deadline_str, "%Y-%m-%d").date()
 
+        if deadline < datetime.today().date():
+            flash("Deadline cannot be in the past.")
+            return redirect(url_for("create_scholarship"))
+
         max_applicants_value = None
         if max_applicants:
             try:
@@ -83,8 +87,10 @@ def create_scholarship():
         flash("Scholarship created successfully.")
         return redirect(url_for("manage_scholarships"))
 
-    return render_template("admin/create_scholarship.html")
-
+    return render_template(
+        "admin/create_scholarship.html",
+        date_today=datetime.today().strftime("%Y-%m-%d")
+    )
 
 @app.route("/staff/manage-scholarships")
 def manage_scholarships():

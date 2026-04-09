@@ -243,6 +243,15 @@ def apply_for_scholarship(scholarship_id):
     student = Student.query.get(student_number)
     scholarship = Scholarship.query.get_or_404(scholarship_id)
 
+    if scholarship.max_applicants:
+        current_count = Application.query.filter_by(
+            scholarship_id=scholarship_id
+    ).count()
+
+    if current_count >= scholarship.max_applicants:
+        flash("This scholarship has reached the maximum number of applicants.")
+        return redirect(url_for("student_scholarships"))
+
     existing_application = Application.query.filter_by(
         student_number=student_number,
         scholarship_id=scholarship_id
