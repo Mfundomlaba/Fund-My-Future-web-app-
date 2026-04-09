@@ -50,6 +50,9 @@ def create_scholarship():
         max_applicants = request.form.get("max_applicants", "").strip()
         status = request.form.get("status", "open").strip()
 
+        required_profile_documents = request.form.getlist("required_profile_documents")
+        custom_documents = request.form.get("custom_documents", "").strip()
+
         if status not in VALID_SCHOLARSHIP_STATUSES:
             flash("Invalid scholarship status.")
             return redirect(url_for("create_scholarship"))
@@ -82,6 +85,35 @@ def create_scholarship():
         )
 
         db.session.add(scholarship)
+        db.session.commit()
+
+        all_documents = []
+
+        for doc_name in required_profile_documents:
+            clean_name = doc_name.strip()
+            if clean_name:
+                all_documents.append(clean_name)
+
+        if custom_documents:
+            custom_list = [doc.strip() for doc in custom_documents.split(",") if doc.strip()]
+            all_documents.extend(custom_list)
+
+        unique_documents = []
+        seen = set()
+
+        for doc_name in all_documents:
+            key = doc_name.lower()
+            if key not in seen:
+                seen.add(key)
+                unique_documents.append(doc_name)
+
+        for doc_name in unique_documents:
+            document = Document(
+                scholarship_id=scholarship.id,
+                document_name=doc_name
+            )
+            db.session.add(document)
+
         db.session.commit()
 
         flash("Scholarship created successfully.")
@@ -202,6 +234,19 @@ def add_required_documents(scholarship_id):
     if request.method == "POST":
         document_name = request.form["document_name"].strip()
 
+        if not document_name:
+            flash("Document name is required.")
+            return redirect(url_for("add_required_documents", scholarship_id=scholarship_id))
+
+        existing_document = Document.query.filter_by(
+            scholarship_id=scholarship_id,
+            document_name=document_name
+        ).first()
+
+        if existing_document:
+            flash("This required document already exists.")
+            return redirect(url_for("add_required_documents", scholarship_id=scholarship_id))
+
         document = Document(
             scholarship_id=scholarship_id,
             document_name=document_name
@@ -221,6 +266,19 @@ def add_required_documents(scholarship_id):
         documents=documents
     )
 
+@app.route("/staff/document/<int:document_id>/delete", methods=["POST"])
+def delete_required_document(document_id):
+    if session.get("user_type") != "staff":
+        return redirect(url_for("login"))
+
+    document = Document.query.get_or_404(document_id)
+    scholarship_id = document.scholarship_id
+
+    db.session.delete(document)
+    db.session.commit()
+
+    flash("Required document deleted successfully.")
+    return redirect(url_for("add_required_documents", scholarship_id=scholarship_id))
 
 @app.route("/staff/applications")
 def staff_applications():

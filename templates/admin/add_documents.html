@@ -22,7 +22,12 @@
     {% if documents %}
         <ul style="margin-top: 15px; padding-left: 20px;">
             {% for document in documents %}
-                <li style="margin-bottom: 10px;">{{ document.document_name }}</li>
+                <li style="margin-bottom: 10px;">
+                    {{ document.document_name }}
+                    <form method="POST" action="{{ url_for('delete_required_document', document_id=document.id) }}" style="display:inline; margin-left: 10px;">
+                        <button type="submit" class="btn" style="padding: 5px 10px; font-size: 12px;">Delete</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>
     {% else %}

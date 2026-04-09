@@ -21,6 +21,7 @@ class Student(db.Model):
     profile_picture = db.Column(db.String(255), nullable=True)
     id_document_path = db.Column(db.String(255), nullable=True)
     academic_record_path = db.Column(db.String(255), nullable=True)
+    proof_of_registration_path = db.Column(db.String(255), nullable=True)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

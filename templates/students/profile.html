@@ -88,6 +88,19 @@
             <p>No academic record uploaded yet.</p>
         {% endif %}
 
+        <label>Proof of Registration</label>
+        <input type="file" name="proof_of_registration">
+        {% if student.proof_of_registration_path %}
+            <p>
+                Current file:
+                <a href="{{ url_for('static', filename='uploads/student_documents/' ~ student.proof_of_registration_path) }}" target="_blank">
+                    View Proof of Registration
+                </a>
+            </p>
+        {% else %}
+            <p>No proof of registration uploaded yet.</p>
+        {% endif %}
+
         <button type="submit" class="btn">Update Profile</button>
     </form>
 </div>

@@ -18,6 +18,7 @@ import uuid
 
 ALLOWED_PROFILE_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg"}
 ALLOWED_DOCUMENT_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
+PROFILE_PROOF_OF_REGISTRATION_NAME = "Proof of Registration"
 
 PROFILE_ID_DOCUMENT_NAME = "ID Document"
 PROFILE_ACADEMIC_RECORD_NAME = "Academic Record"
@@ -201,6 +202,23 @@ def student_profile():
                 flash("Academic record must be a PDF, PNG, JPG, or JPEG file.")
                 return redirect(url_for("student_profile"))
 
+        proof_of_registration = request.files.get("proof_of_registration")
+        if proof_of_registration and proof_of_registration.filename != "":
+            if allowed_document_file(proof_of_registration.filename):
+                filename = secure_filename(proof_of_registration.filename)
+                filename = f"{student.student_number}_proof_{filename}"
+
+                upload_folder = os.path.join("static", "uploads", "student_documents")
+                os.makedirs(upload_folder, exist_ok=True)
+
+                upload_path = os.path.join(upload_folder, filename)
+                proof_of_registration.save(upload_path)
+
+                student.proof_of_registration_path = filename
+            else:
+                flash("Proof of registration must be a PDF, PNG, JPG, or JPEG file.")
+                return redirect(url_for("student_profile"))
+
         db.session.commit()
         flash("Profile updated successfully.")
         return redirect(url_for("student_profile"))
@@ -210,7 +228,6 @@ def student_profile():
         student=student,
         has_accepted_scholarship=has_accepted_scholarship
     )
-
 
 @app.route("/student/scholarships")
 def student_scholarships():
@@ -246,11 +263,11 @@ def apply_for_scholarship(scholarship_id):
     if scholarship.max_applicants:
         current_count = Application.query.filter_by(
             scholarship_id=scholarship_id
-    ).count()
+        ).count()
 
-    if current_count >= scholarship.max_applicants:
-        flash("This scholarship has reached the maximum number of applicants.")
-        return redirect(url_for("student_scholarships"))
+        if current_count >= scholarship.max_applicants:
+            flash("This scholarship has reached the maximum number of applicants.")
+            return redirect(url_for("student_scholarships"))
 
     existing_application = Application.query.filter_by(
         student_number=student_number,
@@ -282,6 +299,12 @@ def apply_for_scholarship(scholarship_id):
                 "document": document,
                 "is_uploaded": bool(student.academic_record_path),
                 "file_path": student.academic_record_path
+            })
+        elif document_name == PROFILE_PROOF_OF_REGISTRATION_NAME.lower():
+            profile_documents.append({
+                "document": document,
+                "is_uploaded": bool(student.proof_of_registration_path),
+                "file_path": student.proof_of_registration_path
             })
         else:
             application_documents.append(document)
