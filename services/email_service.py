@@ -10,7 +10,7 @@ STATUS_MESSAGES = {
     "under_review": "Your application is now under review.",
     "needs_revision": "Your application requires revision. Please check the latest comment in the system.",
     "shortlisted": "Good news. Your application has been shortlisted.",
-    "approved": "Congratulations. Your application has been approved.",
+    "approved": "Congratulations. Your application has been approved. Please accept offer.",
     "rejected": "Your application was unfortunately not successful.",
     "accepted": "You have successfully accepted your scholarship offer."
 }
