@@ -528,8 +528,9 @@ table th {
 input[type="file"] {
     display: block;
     margin-top: 8px;
-    color: #1f2a44;
+    color: #0f172a; /* darker text */
     font-size: 14px;
+    font-weight: 500;
 }
 
 input[type="file"]::file-selector-button {
